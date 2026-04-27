@@ -2,6 +2,7 @@ import express from 'express';
 import contentController from '../controllers/contentController.js';
 import auth from '../middlewares/authentication.js';
 import authorizeRoles from '../middlewares/authorization.js';
+import { publicLiveRateLimiter } from '../middlewares/rateLimiter.js';
 import upload from '../middlewares/upload.js';
 import constants from '../utils/constant/constants.js';
 import Result from '../utils/constant/result.js';
@@ -22,7 +23,7 @@ const handleUpload = (req, res, next) => {
     });
 };
 
-router.get('/live/:teacherId', async (req, res) => {
+router.get('/live/:teacherId', publicLiveRateLimiter, async (req, res) => {
     const { subject } = req.query;
     const data = await contentController.getLiveContent({
         teacherId: req.params.teacherId,

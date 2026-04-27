@@ -70,7 +70,7 @@ Content Broadcasting System - Architecture Notes
 9. Scalability Approach
 - The current implementation is intentionally simple and assignment-focused, but it is designed so future improvements are possible.
 - The /content/live API is a good candidate for Redis caching because it is public and read-heavy.
-- Rate limiting can be added to public APIs to prevent abuse.
+- Rate limiting is implemented on the public live API to reduce abuse risk and can be tuned further if traffic grows.
 - Local upload storage can be replaced with S3 or another object store without changing the content lifecycle design.
 - Broadcast calculation can later be moved to a background or cached layer if traffic grows.
 - Schedule and content modules are separated enough to support future analytics, audit logs or queue-based processing.

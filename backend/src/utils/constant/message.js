@@ -74,6 +74,7 @@ class Message {
         this.scheduleDeletedSuccessfully = 'Schedule deleted successfully';
         this.liveContentFetchedSuccessfully = 'Live content fetched successfully';
         this.noContentAvailable = 'No content available';
+        this.tooManyRequests = 'Too many requests. Please try again later.';
         this.unableToUploadContent = 'Unable to upload content';
         this.unableToFetchTeacherContents = 'Unable to fetch teacher contents';
         this.unableToFetchTeacherContent = 'Unable to fetch teacher content';

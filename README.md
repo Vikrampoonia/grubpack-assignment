@@ -65,6 +65,7 @@ frontend/
 - Optional subject filtering
 - Subject-wise active rotation logic
 - Empty response handling when no content is active
+- Rate limiting on the public live API
 
 ## Backend Setup
 
@@ -179,6 +180,10 @@ Example:
 - No approved content -> empty live response
 - Approved but not active -> empty live response
 - Invalid subject in live filter -> empty live response
+
+## Public API Protection
+- The public live API is rate limited using `express-rate-limit`.
+- Current policy: 100 requests per 15 minutes per IP.
 
 ## Architecture Notes
 Detailed design explanation is available in:
