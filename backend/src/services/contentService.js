@@ -1,4 +1,5 @@
 import { Op } from 'sequelize';
+import fs from 'fs';
 import { Content } from '../models/content.js';
 import { ContentSlot } from '../models/contentSlot.js';
 import { User } from '../models/user.js';
@@ -88,6 +89,8 @@ class ContentService {
             await this.#ensureSubjectSlot(updateData.subject);
         }
 
+        const previousFilePath = file ? content.file_url : null;
+
         await content.update({
             ...(updateData.title !== undefined ? { title: updateData.title } : {}),
             ...(updateData.description !== undefined ? { description: updateData.description } : {}),
@@ -102,6 +105,10 @@ class ContentService {
             } : {}),
         });
 
+        if (previousFilePath) {
+            this.#deleteFileIfExists(previousFilePath);
+        }
+
         return content;
     }
 
@@ -112,7 +119,9 @@ class ContentService {
             throw new Error(messages.contentDeleteNotAllowed);
         }
 
+        const filePath = content.file_url;
         await content.destroy();
+        this.#deleteFileIfExists(filePath);
         return { deleted: true, contentId: Number(contentId) };
     }
 
@@ -222,6 +231,20 @@ class ContentService {
         }
 
         return content;
+    }
+
+    #deleteFileIfExists(filePath) {
+        if (!filePath) {
+            return;
+        }
+
+        try {
+            if (fs.existsSync(filePath)) {
+                fs.unlinkSync(filePath);
+            }
+        } catch (error) {
+            console.error(`Failed to delete file: ${filePath}`, error);
+        }
     }
 }
 
