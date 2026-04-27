@@ -28,6 +28,12 @@ class Constants {
             rejected: 'rejected',
         };
 
+        this.upload = {
+            directory: 'uploads/',
+            maxFileSize: 10 * 1024 * 1024,
+            allowedMimeTypes: ['image/jpeg', 'image/png', 'image/gif'],
+        };
+
         this.token = {
             prefix: 'Bearer',
             expiresIn: '1d',

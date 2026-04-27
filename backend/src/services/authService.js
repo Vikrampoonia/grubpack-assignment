@@ -58,6 +58,12 @@ class AuthService {
             accessToken,
         };
     }
+
+    async logOut() {
+        return {
+            success: true,
+        };
+    }
 }
 
 export default new AuthService();

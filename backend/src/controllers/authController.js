@@ -15,6 +15,18 @@ class AuthController {
                 return res;
             }
 
+            if (!this.#isValidEmail(email)) {
+                res.status = httpStatus.badRequest;
+                res.message = messages.invalidEmail;
+                return res;
+            }
+
+            if (password.length < 6) {
+                res.status = httpStatus.badRequest;
+                res.message = messages.passwordMinLength;
+                return res;
+            }
+
             if (!Object.values(roles).includes(role)) {
                 res.status = httpStatus.badRequest;
                 res.message = messages.invalidRole;
@@ -46,6 +58,12 @@ class AuthController {
                 return res;
             }
 
+            if (!this.#isValidEmail(email)) {
+                res.status = httpStatus.badRequest;
+                res.message = messages.invalidEmail;
+                return res;
+            }
+
             const data = await authService.logIn({ email, password });
             res.status = httpStatus.success;
             res.message = messages.loginSuccessful;
@@ -56,6 +74,27 @@ class AuthController {
             res.message = err.message || messages.unableToLogin;
             return res;
         }
+    }
+
+    async logOut() {
+        const res = new Result();
+        const { httpStatus } = constants;
+
+        try {
+            const data = await authService.logOut();
+            res.status = httpStatus.success;
+            res.message = messages.logoutSuccessful;
+            res.data = data;
+            return res;
+        } catch (err) {
+            res.status = httpStatus.serverError;
+            res.message = err.message || messages.unableToLogout;
+            return res;
+        }
+    }
+
+    #isValidEmail(email) {
+        return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
     }
 }
 

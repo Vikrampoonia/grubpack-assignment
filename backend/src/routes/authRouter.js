@@ -20,6 +20,11 @@ router.post('/logIn', async (req, res) => {
     res.status(data.status).send(data);
 });
 
+router.post('/logOut', auth, authorizeRoles(constants.roles.principal, constants.roles.teacher), async (req, res) => {
+    const data = await authController.logOut();
+    res.status(data.status).send(data);
+});
+
 router.get('/me', auth, authorizeRoles(constants.roles.principal, constants.roles.teacher), async (req, res) => {
     const result = new Result();
     result.status = constants.httpStatus.success;

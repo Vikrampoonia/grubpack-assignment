@@ -9,6 +9,9 @@ export const Content = sequelize.define('Content', {
     file_url: { type: DataTypes.STRING, allowNull: false },
     file_type: { type: DataTypes.STRING(50), allowNull: false },
     file_size: { type: DataTypes.INTEGER, allowNull: false },
+    start_time: { type: DataTypes.DATE, allowNull: true },
+    end_time: { type: DataTypes.DATE, allowNull: true },
+    rotation_duration: { type: DataTypes.INTEGER, allowNull: true },
     status: {
         type: DataTypes.ENUM('uploaded', 'pending', 'approved', 'rejected'),
         defaultValue: 'pending'
