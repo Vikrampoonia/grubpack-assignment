@@ -4,6 +4,7 @@ import { connectDB, sequelize } from './config/db.js';
 import './models/index.js';
 import authRoutes from './routes/authRouter.js';
 import contentRoutes from './routes/contentRouter.js';
+import scheduleRoutes from './routes/scheduleRouter.js';
 import Result from './utils/constant/result.js';
 import messages from './utils/constant/message.js';
 import constants from './utils/constant/constants.js';
@@ -15,6 +16,7 @@ app.use(express.json());
 
 app.use('/api/auth', authRoutes);
 app.use('/api/content', contentRoutes);
+app.use('/api/schedule', scheduleRoutes);
 
 app.get('/health', (req, res) => {
     const result = new Result();

@@ -1,5 +1,6 @@
 import Result from '../utils/constant/result.js';
 import contentService from '../services/contentService.js';
+import broadcastService from '../services/broadcastService.js';
 import constants from '../utils/constant/constants.js';
 import messages from '../utils/constant/message.js';
 import ValidationHelper from '../utils/validationHelper.js';
@@ -323,6 +324,29 @@ class ContentController {
         } catch (err) {
             res.status = err.message === messages.contentNotFound ? httpStatus.notFound : err.message === messages.contentAccessDenied ? httpStatus.forbidden : err.message === messages.contentResubmitNotAllowed ? httpStatus.badRequest : httpStatus.serverError;
             res.message = err.message || messages.unableToResubmitContent;
+            return res;
+        }
+    }
+
+    async getLiveContent({ teacherId, subject }) {
+        const res = new Result();
+        const { httpStatus } = constants;
+
+        try {
+            if (!ValidationHelper.isPositiveInteger(teacherId)) {
+                res.status = httpStatus.badRequest;
+                res.message = messages.invalidContentId;
+                return res;
+            }
+
+            const data = await broadcastService.getLiveContent({ teacherId, subject });
+            res.status = httpStatus.success;
+            res.message = data.length ? messages.liveContentFetchedSuccessfully : messages.noContentAvailable;
+            res.data = data;
+            return res;
+        } catch (err) {
+            res.status = httpStatus.serverError;
+            res.message = err.message || messages.unableToFetchLiveContent;
             return res;
         }
     }

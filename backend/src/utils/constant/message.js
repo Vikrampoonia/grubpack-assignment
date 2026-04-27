@@ -58,6 +58,22 @@ class Message {
         this.contentsFetchedSuccessfully = 'Contents fetched successfully';
         this.pendingContentsFetchedSuccessfully = 'Pending contents fetched successfully';
         this.contentSummaryFetchedSuccessfully = 'Content summary fetched successfully';
+        this.scheduleFieldsRequired = 'Content id, slot id, rotation order and duration are required';
+        this.invalidScheduleId = 'Schedule id must be a valid positive number';
+        this.invalidSlotId = 'Slot id must be a valid positive number';
+        this.invalidScheduleDuration = 'Schedule duration must be greater than 0';
+        this.invalidRotationOrder = 'Rotation order must be greater than 0';
+        this.contentMustBeApprovedForSchedule = 'Only approved content can be scheduled';
+        this.slotNotFound = 'Content slot not found';
+        this.scheduleNotFound = 'Schedule not found';
+        this.scheduleUpdateFieldsRequired = 'At least one schedule field is required to update';
+        this.scheduleCreatedSuccessfully = 'Schedule created successfully';
+        this.schedulesFetchedSuccessfully = 'Schedules fetched successfully';
+        this.scheduleFetchedSuccessfully = 'Schedule fetched successfully';
+        this.scheduleUpdatedSuccessfully = 'Schedule updated successfully';
+        this.scheduleDeletedSuccessfully = 'Schedule deleted successfully';
+        this.liveContentFetchedSuccessfully = 'Live content fetched successfully';
+        this.noContentAvailable = 'No content available';
         this.unableToUploadContent = 'Unable to upload content';
         this.unableToFetchTeacherContents = 'Unable to fetch teacher contents';
         this.unableToFetchTeacherContent = 'Unable to fetch teacher content';
@@ -69,6 +85,12 @@ class Message {
         this.unableToFetchContents = 'Unable to fetch contents';
         this.unableToFetchPendingContents = 'Unable to fetch pending contents';
         this.unableToFetchContentSummary = 'Unable to fetch content summary';
+        this.unableToCreateSchedule = 'Unable to create schedule';
+        this.unableToFetchSchedules = 'Unable to fetch schedules';
+        this.unableToFetchSchedule = 'Unable to fetch schedule';
+        this.unableToUpdateSchedule = 'Unable to update schedule';
+        this.unableToDeleteSchedule = 'Unable to delete schedule';
+        this.unableToFetchLiveContent = 'Unable to fetch live content';
     }
 }
 

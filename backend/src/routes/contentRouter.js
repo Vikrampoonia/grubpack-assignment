@@ -22,6 +22,15 @@ const handleUpload = (req, res, next) => {
     });
 };
 
+router.get('/live/:teacherId', async (req, res) => {
+    const { subject } = req.query;
+    const data = await contentController.getLiveContent({
+        teacherId: req.params.teacherId,
+        subject,
+    });
+    res.status(data.status).send(data);
+});
+
 router.post('/upload-content', auth, authorizeRoles(constants.roles.teacher), handleUpload, async (req, res) => {
     const { title, description, subject, startTime, endTime, rotationDuration } = req.body;
     const data = await contentController.uploadContent({
