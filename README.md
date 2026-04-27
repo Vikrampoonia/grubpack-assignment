@@ -14,6 +14,10 @@ Backend-only content broadcasting system built for the Grubpack assignment.
 ## Deployed Backend
 - Render URL: `https://grubpack-assignment.onrender.com`
 
+## Public Links
+- Postman Collection URL: `https://educaseintern.postman.co/workspace/Team-Workspace~e4c6037c-47c3-48f8-8bad-614f7834be8f/collection/40196768-62543934-0deb-4021-86cf-2d4e01f26e2d?action=share&source=copy-link&creator=40196768`
+- Live URL: `https://grubpack-assignment.onrender.com`
+
 ## Project Structure
 ```text
 backend/
