@@ -37,17 +37,20 @@ router.post('/upload-content', auth, authorizeRoles(constants.roles.teacher), ha
     res.status(data.status).send(data);
 });
 
-router.get('/get-content', auth, authorizeRoles(constants.roles.teacher), async (req, res) => {
+router.get('/list-content', auth, authorizeRoles(constants.roles.teacher, constants.roles.principal), async (req, res) => {
+    const { status, subject, teacherId, page, limit } = req.query;
     const data = await contentController.getContents({
         teacherId: req.user.id,
-        query: req.query,
+        role: req.user.role,
+        query: { status, subject, teacherId, page, limit },
     });
     res.status(data.status).send(data);
 });
 
-router.get('/get-content/:contentId', auth, authorizeRoles(constants.roles.teacher), async (req, res) => {
+router.get('/content-detail/:contentId', auth, authorizeRoles(constants.roles.teacher, constants.roles.principal), async (req, res) => {
     const data = await contentController.getContentById({
         teacherId: req.user.id,
+        role: req.user.role,
         contentId: req.params.contentId,
     });
     res.status(data.status).send(data);
@@ -77,9 +80,31 @@ router.delete('/get-content/:contentId', auth, authorizeRoles(constants.roles.te
     res.status(data.status).send(data);
 });
 
-router.get('/my-summary', auth, authorizeRoles(constants.roles.teacher), async (req, res) => {
+router.get('/content-summary', auth, authorizeRoles(constants.roles.teacher, constants.roles.principal), async (req, res) => {
     const data = await contentController.getContentSummary({
         teacherId: req.user.id,
+        role: req.user.role,
+    });
+    res.status(data.status).send(data);
+});
+
+router.get('/pending-content', auth, authorizeRoles(constants.roles.principal), async (req, res) => {
+    const { subject, teacherId, page, limit } = req.query;
+    const data = await contentController.getPendingContents({
+        teacherId: req.user.id,
+        role: req.user.role,
+        query: { subject, teacherId, page, limit },
+    });
+    res.status(data.status).send(data);
+});
+
+router.patch('/update-content-status/:contentId', auth, authorizeRoles(constants.roles.principal), async (req, res) => {
+    const { status, rejectionReason } = req.body;
+    const data = await contentController.updateContentStatus({
+        contentId: req.params.contentId,
+        principalId: req.user.id,
+        status,
+        rejectionReason,
     });
     res.status(data.status).send(data);
 });

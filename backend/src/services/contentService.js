@@ -1,6 +1,7 @@
 import { Op } from 'sequelize';
 import { Content } from '../models/content.js';
 import { ContentSlot } from '../models/contentSlot.js';
+import { User } from '../models/user.js';
 import messages from '../utils/constant/message.js';
 import constants from '../utils/constant/constants.js';
 
@@ -26,8 +27,8 @@ class ContentService {
         return content;
     }
 
-    async getContents({ teacherId, query }) {
-        const where = { uploaded_by: teacherId };
+    async getContents({ teacherId, role, query }) {
+        const where = role === constants.roles.teacher ? { uploaded_by: teacherId } : {};
 
         if (query.status) {
             where.status = query.status;
@@ -37,12 +38,22 @@ class ContentService {
             where.subject = { [Op.iLike]: `%${query.subject}%` };
         }
 
+        if (role === constants.roles.principal && query.teacherId) {
+            where.uploaded_by = Number(query.teacherId);
+        }
+
         const page = Number(query.page) > 0 ? Number(query.page) : 1;
         const limit = Number(query.limit) > 0 ? Number(query.limit) : 10;
         const offset = (page - 1) * limit;
 
         const { rows, count } = await Content.findAndCountAll({
             where,
+            include: role === constants.roles.principal
+                ? [
+                    { model: User, as: 'uploader', attributes: ['id', 'name', 'email'] },
+                    { model: User, as: 'approver', attributes: ['id', 'name', 'email'] },
+                ]
+                : [],
             order: [['id', 'DESC']],
             limit,
             offset,
@@ -59,8 +70,10 @@ class ContentService {
         };
     }
 
-    async getContentById({ teacherId, contentId }) {
-        const content = await this.#getOwnedContent({ teacherId, contentId });
+    async getContentById({ teacherId, role, contentId }) {
+        const content = role === constants.roles.principal
+            ? await this.#findContentWithUsers(contentId)
+            : await this.#getOwnedContent({ teacherId, contentId });
         return content;
     }
 
@@ -103,9 +116,10 @@ class ContentService {
         return { deleted: true, contentId: Number(contentId) };
     }
 
-    async getContentSummary({ teacherId }) {
+    async getContentSummary({ teacherId, role }) {
+        const where = role === constants.roles.teacher ? { uploaded_by: teacherId } : undefined;
         const contents = await Content.findAll({
-            where: { uploaded_by: teacherId },
+            where,
             attributes: ['status'],
         });
 
@@ -124,6 +138,39 @@ class ContentService {
         });
 
         return summary;
+    }
+
+    async getPendingContents({ teacherId, role, query }) {
+        return this.getContents({
+            teacherId,
+            role,
+            query: {
+                ...query,
+                status: constants.contentStatus.pending,
+            },
+        });
+    }
+
+    async updateContentStatus({ contentId, principalId, status, rejectionReason }) {
+        const content = await this.#findContentWithUsers(contentId);
+
+        const updatePayload = status === constants.contentStatus.approved
+            ? {
+                status,
+                approved_by: principalId,
+                approved_at: new Date(),
+                rejection_reason: null,
+            }
+            : {
+                status,
+                rejection_reason: rejectionReason,
+                approved_at: null,
+                approved_by: null,
+            };
+
+        await content.update(updatePayload);
+
+        return content;
     }
 
     async resubmitContent({ teacherId, contentId }) {
@@ -160,6 +207,21 @@ class ContentService {
             where: { subject },
             defaults: { subject },
         });
+    }
+
+    async #findContentWithUsers(contentId) {
+        const content = await Content.findByPk(contentId, {
+            include: [
+                { model: User, as: 'uploader', attributes: ['id', 'name', 'email'] },
+                { model: User, as: 'approver', attributes: ['id', 'name', 'email'] },
+            ],
+        });
+
+        if (!content) {
+            throw new Error(messages.contentNotFound);
+        }
+
+        return content;
     }
 }
 

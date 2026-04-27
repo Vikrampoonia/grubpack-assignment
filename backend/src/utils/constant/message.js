@@ -52,6 +52,12 @@ class Message {
         this.contentDeletedSuccessfully = 'Content deleted successfully';
         this.teacherContentSummaryFetchedSuccessfully = 'Teacher content summary fetched successfully';
         this.contentResubmittedSuccessfully = 'Content resubmitted successfully';
+        this.rejectionReasonRequired = 'Rejection reason is required';
+        this.invalidApprovalStatus = 'Status must be approved or rejected';
+        this.contentStatusUpdatedSuccessfully = 'Content status updated successfully';
+        this.contentsFetchedSuccessfully = 'Contents fetched successfully';
+        this.pendingContentsFetchedSuccessfully = 'Pending contents fetched successfully';
+        this.contentSummaryFetchedSuccessfully = 'Content summary fetched successfully';
         this.unableToUploadContent = 'Unable to upload content';
         this.unableToFetchTeacherContents = 'Unable to fetch teacher contents';
         this.unableToFetchTeacherContent = 'Unable to fetch teacher content';
@@ -59,6 +65,10 @@ class Message {
         this.unableToDeleteContent = 'Unable to delete content';
         this.unableToFetchTeacherContentSummary = 'Unable to fetch teacher content summary';
         this.unableToResubmitContent = 'Unable to resubmit content';
+        this.unableToUpdateContentStatus = 'Unable to update content status';
+        this.unableToFetchContents = 'Unable to fetch contents';
+        this.unableToFetchPendingContents = 'Unable to fetch pending contents';
+        this.unableToFetchContentSummary = 'Unable to fetch content summary';
     }
 }
 

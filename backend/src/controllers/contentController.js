@@ -60,7 +60,7 @@ class ContentController {
         }
     }
 
-    async getContents({ teacherId, query }) {
+    async getContents({ teacherId, role, query }) {
         const res = new Result();
         const { httpStatus, contentStatus } = constants;
 
@@ -71,23 +71,30 @@ class ContentController {
                 return res;
             }
 
+            if (role === constants.roles.principal && query.teacherId && !ValidationHelper.isPositiveInteger(query.teacherId)) {
+                res.status = httpStatus.badRequest;
+                res.message = messages.invalidContentId;
+                return res;
+            }
+
             const data = await contentService.getContents({
                 teacherId,
+                role,
                 query,
             });
 
             res.status = httpStatus.success;
-            res.message = messages.teacherContentsFetchedSuccessfully;
+            res.message = role === constants.roles.principal ? messages.contentsFetchedSuccessfully : messages.teacherContentsFetchedSuccessfully;
             res.data = data;
             return res;
         } catch (err) {
             res.status = httpStatus.serverError;
-            res.message = err.message || messages.unableToFetchTeacherContents;
+            res.message = err.message || (role === constants.roles.principal ? messages.unableToFetchContents : messages.unableToFetchTeacherContents);
             return res;
         }
     }
 
-    async getContentById({ teacherId, contentId }) {
+    async getContentById({ teacherId, role, contentId }) {
         const res = new Result();
         const { httpStatus } = constants;
 
@@ -100,6 +107,7 @@ class ContentController {
 
             const data = await contentService.getContentById({
                 teacherId,
+                role,
                 contentId,
             });
 
@@ -109,7 +117,7 @@ class ContentController {
             return res;
         } catch (err) {
             res.status = err.message === messages.contentNotFound ? httpStatus.notFound : err.message === messages.contentAccessDenied ? httpStatus.forbidden : httpStatus.serverError;
-            res.message = err.message || messages.unableToFetchTeacherContent;
+            res.message = err.message || (role === constants.roles.principal ? messages.unableToFetchContents : messages.unableToFetchTeacherContent);
             return res;
         }
     }
@@ -208,22 +216,86 @@ class ContentController {
         }
     }
 
-    async getContentSummary({ teacherId }) {
+    async getContentSummary({ teacherId, role }) {
         const res = new Result();
         const { httpStatus } = constants;
 
         try {
             const data = await contentService.getContentSummary({
                 teacherId,
+                role,
             });
 
             res.status = httpStatus.success;
-            res.message = messages.teacherContentSummaryFetchedSuccessfully;
+            res.message = role === constants.roles.principal ? messages.contentSummaryFetchedSuccessfully : messages.teacherContentSummaryFetchedSuccessfully;
             res.data = data;
             return res;
         } catch (err) {
             res.status = httpStatus.serverError;
-            res.message = err.message || messages.unableToFetchTeacherContentSummary;
+            res.message = err.message || (role === constants.roles.principal ? messages.unableToFetchContentSummary : messages.unableToFetchTeacherContentSummary);
+            return res;
+        }
+    }
+
+    async getPendingContents({ teacherId, role, query }) {
+        const res = new Result();
+        const { httpStatus } = constants;
+
+        try {
+            if (role === constants.roles.principal && query.teacherId && !ValidationHelper.isPositiveInteger(query.teacherId)) {
+                res.status = httpStatus.badRequest;
+                res.message = messages.invalidContentId;
+                return res;
+            }
+
+            const data = await contentService.getPendingContents({ teacherId, role, query });
+            res.status = httpStatus.success;
+            res.message = role === constants.roles.principal ? messages.pendingContentsFetchedSuccessfully : messages.teacherContentsFetchedSuccessfully;
+            res.data = data;
+            return res;
+        } catch (err) {
+            res.status = httpStatus.serverError;
+            res.message = err.message || (role === constants.roles.principal ? messages.unableToFetchPendingContents : messages.unableToFetchTeacherContents);
+            return res;
+        }
+    }
+
+    async updateContentStatus({ contentId, principalId, status, rejectionReason }) {
+        const res = new Result();
+        const { httpStatus, contentStatus } = constants;
+
+        try {
+            if (!ValidationHelper.isPositiveInteger(contentId)) {
+                res.status = httpStatus.badRequest;
+                res.message = messages.invalidContentId;
+                return res;
+            }
+
+            if (![contentStatus.approved, contentStatus.rejected].includes(status)) {
+                res.status = httpStatus.badRequest;
+                res.message = messages.invalidApprovalStatus;
+                return res;
+            }
+
+            if (status === contentStatus.rejected && (!rejectionReason || !rejectionReason.trim())) {
+                res.status = httpStatus.badRequest;
+                res.message = messages.rejectionReasonRequired;
+                return res;
+            }
+
+            const data = await contentService.updateContentStatus({
+                contentId,
+                principalId,
+                status,
+                rejectionReason: rejectionReason?.trim(),
+            });
+            res.status = httpStatus.success;
+            res.message = messages.contentStatusUpdatedSuccessfully;
+            res.data = data;
+            return res;
+        } catch (err) {
+            res.status = err.message === messages.contentNotFound ? httpStatus.notFound : httpStatus.serverError;
+            res.message = err.message || messages.unableToUpdateContentStatus;
             return res;
         }
     }
